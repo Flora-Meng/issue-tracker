@@ -1,44 +1,63 @@
 import { Request, Response } from 'express';
-import TodoService from '../services/todoService';
+import { getTodos, createTodo, deleteTodo, updateTodo } from '../services/todoService';
 
-export const getTodos = async (req: Request, res: Response): Promise<void> => {
+// get all Todos
+export const getTodosController = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const todos = await TodoService.getTodos();
-    res.json(todos);
+    const todos = await getTodos();
+    return res.json(todos);
   } catch (error) {
-    const typedError = error as Error;
-    res.status(500).json({ message: typedError.message });
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const addTodo = async (req: Request, res: Response): Promise<void> => {
+// create a Todo
+export const createTodoController = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { title, description, status } = req.body;
-    const newTodo = await TodoService.addTodo(title, description, status);
-    res.json(newTodo);
+
+    if (!title || !description) {
+      return res.status(400).send({ message: "Title and description are required" });
+    }
+
+    const newTodo = await createTodo(title, description, status);
+    console.log('Created:', newTodo);
+    return res.status(201).json(newTodo);
   } catch (error) {
-    const typedError = error as Error;
-    res.status(500).json({ message: typedError.message });
+    return res.status(500).send({ error: (error as Error).message });
   }
 };
 
-export const deleteTodo = async (req: Request, res: Response): Promise<void> => {
-  try {
-    await TodoService.deleteTodo(req.params.id);
-    res.json({ message: 'Todo deleted' });
-  } catch (error) {
-    const typedError = error as Error;
-    res.status(500).json({ message: typedError.message });
-  }
-};
-
-export const updateTodo = async (req: Request, res: Response): Promise<void> => {
+// update a Todo
+export const updateTodoController = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { title, description, status } = req.body;
-    const updatedTodo = await TodoService.updateTodo(req.params.id, title, description, status);
-    res.json(updatedTodo);
+
+    if (!title || !description) {
+      return res.status(400).send({ message: "Title and description are required" });
+    }
+
+    const updatedTodo = await updateTodo(req.params.id, title, description, status);
+    if (!updatedTodo) {
+      return res.status(404).send({ error: "Todo not found" });
+    }
+    console.log('Updated:', updatedTodo);
+    return res.json(updatedTodo);
   } catch (error) {
-    const typedError = error as Error;
-    res.status(500).json({ message: typedError.message });
+    return res.status(500).send({ error: (error as Error).message });
+  }
+};
+
+// Delete a Todo
+export const deleteTodoController = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const deletedTodo = await deleteTodo(req.params.id);
+    if (!deletedTodo) {
+      return res.status(404).send({ error: "Todo not found" });
+    }
+    console.log('Deleted:', req.params.id);
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).send({ error: (error as Error).message });
   }
 };
