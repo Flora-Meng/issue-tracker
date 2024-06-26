@@ -13,7 +13,7 @@ This is a simple issue track application that includes both frontend and backend
 4. npm start -- start the backend server
 
 If the backend server starts successfully, you should see the following messages:
-Server is running on port: 5002
+Server is running on port: 5001
 MongoDB database connection established successfully
 
 ### Frontend Setup
