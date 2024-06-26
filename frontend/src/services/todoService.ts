@@ -1,33 +1,43 @@
 import api from './api';
 
-export const saveTodo = async (
-  todo: {
-    _id: string;
-    title: string;
-    description: string;
-    status: string;
-  } | null,
+export const createTodo = async (
   title: string,
   description: string,
   status: string,
 ) => {
   try {
-    if (todo) {
-      await api.put(`/todos/${todo._id}`, { title, description, status });
-    } else {
-      await api.post('/todos', { title, description, status });
-    }
+    await api.post('/todos', { title, description, status });
   } catch (error) {
-    console.error('Failed to save todo', error);
+    throw error;
+  }
+};
+
+export const updateTodo = async (
+  id: string,
+  title: string,
+  description: string,
+  status: string,
+) => {
+  try {
+    await api.put(`/todos/${id}`, { title, description, status });
+  } catch (error) {
     throw error;
   }
 };
 
 export const deleteTodo = async (id: string) => {
-  await api.delete(`/todos/${id}`);
+  try {
+    await api.delete(`/todos/${id}`);
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const fetchTodos = async () => {
-  const response = await api.get('/todos');
-  return response.data;
+  try {
+    const response = await api.get('/todos');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };

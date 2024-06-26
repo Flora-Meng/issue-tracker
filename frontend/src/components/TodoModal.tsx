@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { saveTodo } from '../services/todoService';
+import { createTodo, updateTodo } from '../services/todoService';
 import { TodoModalProps } from '../types/Todo';
 
 const TodoModal: React.FC<TodoModalProps> = ({
@@ -21,6 +21,7 @@ const TodoModal: React.FC<TodoModalProps> = ({
     }
   }, []);
 
+  // Update form fields when `todo` prop changes
   useEffect(() => {
     if (todo) {
       setTitle(todo.title);
@@ -33,10 +34,15 @@ const TodoModal: React.FC<TodoModalProps> = ({
     }
   }, [todo]);
 
+  // Handle form submission
   const handleSaveTodo = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault();
     try {
-      await saveTodo(todo, title, description, status);
+      if (todo) {
+        await updateTodo(todo._id, title, description, status);
+      } else {
+        await createTodo(title, description, status);
+      }
       fetchTodos();
       onRequestClose();
     } catch (error) {

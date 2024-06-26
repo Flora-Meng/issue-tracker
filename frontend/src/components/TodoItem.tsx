@@ -10,6 +10,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   fetchTodos,
   openEditModal,
 }) => {
+  // Handle delete action
   const handleDelete = async () => {
     await deleteTodo(todo._id);
     fetchTodos();
